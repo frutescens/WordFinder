@@ -1,12 +1,13 @@
 
 export type WordData = {
-    Definitions: Definition[],
-    Synoynms: string[],
-    Antonyms: string[]
+    definitions: Definition[],
+    synonynms: string[],
+    antonyms: string[]
 }
 
 export type Definition = {
-    PartOfSpeech: string,
-    Meaning: string, 
-    Catagories: string[]
+    partOfSpeech: string,
+    meaning: string, 
+    categories: string[]
+    examples: string[]
 }
