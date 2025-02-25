@@ -1,4 +1,10 @@
 
+export type JSONEntry = {
+    ANTONYMS: string[],
+    MEANINGS: any[],
+    SYNONYMS: string[]
+}
+
 export type WordData = {
     definitions: Definition[],
     synonynms: string[],

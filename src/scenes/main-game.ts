@@ -1,18 +1,28 @@
 import { Scene } from "phaser";
-import { Unlocks } from "../enums/unlocks";
+import { ALL_INPUT_UPGRADES, InputUpgrades } from "../enums/input-upgrades";
 import { PlayerProgress } from "../types/player-data";
-import { Definition, WordData } from "../types/word-data";
+import { Definition, JSONEntry, WordData } from "../types/word-data";
 import { uppercaseList } from "../utils";
 import { TextEdit } from "phaser3-rex-plugins/plugins/textedit";
 import { UNLOCKS_FOUND_LABEL, WORDS_FOUND_LABEL } from "../ui/labels";
-import { WordTextBox } from "../ui/text-container";
+import { WordTextBox } from "../ui/word-text-box";
+import { ALL_OTHER_UPGRADES, OtherUpgrades } from "../enums/other-upgrades";
+import WordDict from "../word_list.json" assert {type: 'json'};
+import { INPUT_UPGRADES_CONDITIONS, OTHER_UPGRADES_CONDITIONS, UnlockConditionFunc } from "../upgrades/unlock-conditions";
+import eventsCenter from "../events-center";
+
+export type MainGameData = {
+  wordsFound: string[],
+  inputUpgrades: InputUpgrades[],
+  otherUpgrades: OtherUpgrades[]
+}
 
 export class MainGame extends Scene {
-  public DICTIONARY;
+  public DICTIONARY_WORDS: string[];
   public DICTIONARY_SIZE: number;
   public WORDS_FOUND: string[];
-  public UNLOCKS: Unlocks[];
-  private inputKey: Phaser.Input.Keyboard.Key;
+  public INPUT_UPGRADES: InputUpgrades[];
+  public OTHER_UPGRADES: OtherUpgrades[];
   private playerInput: Phaser.GameObjects.Text;
   private editor: TextEdit;
   private progressZone: Phaser.GameObjects.Container;
@@ -27,20 +37,20 @@ export class MainGame extends Scene {
     this.load.image("background", "./assets/background.png");
   }
 
-  init(data: any) {
-    this.DICTIONARY = data.dictionary;
-    this.DICTIONARY_SIZE = Object.keys(this.DICTIONARY).length;
+  init(data: MainGameData) {
+    this.DICTIONARY_WORDS = Object.keys(WordDict);
+    this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
     this.WORDS_FOUND = data.wordsFound;
-    this.UNLOCKS = data.unlocks;
-    this.inputKey = this.input.keyboard!.addKey("ENTER")!;
+    this.INPUT_UPGRADES = data.inputUpgrades;
+    this.OTHER_UPGRADES = data.otherUpgrades;
   }
 
   create() {
     this.add.image(0, 0, "background");
-    this.scene.sendToBack("UnlockManager");
     this.scene.launch("UnlockManager", {
-      wordsFound: this.WORDS_FOUND,
-      unlocks: this.UNLOCKS,
+      scope: this,
+      inputUpgrades: this.INPUT_UPGRADES,
+      otherUpgrades: this.OTHER_UPGRADES,
     });
     this.createPlayerInput();
     this.createPlayerProgress();
@@ -92,26 +102,45 @@ export class MainGame extends Scene {
 
   private processWord(input: string): void {
     const processedInput = encodeURIComponent(input.toUpperCase());
-    const dictionaryEntry = this.DICTIONARY[processedInput];
+    const dictionaryEntry = WordDict[processedInput];
     if (!dictionaryEntry) {
-      this.playerInput.setColor("RED");
       return;
     } else {
       const processedEntry = this.processDictionaryEntry(dictionaryEntry);
-      this.updateSaveData(processedInput);
-      this.wordList.push(new WordTextBox(this, 0.5, 0.5, input, processedEntry));
+      const isNewWord = !this.WORDS_FOUND.includes(processedInput);
+      this.updatePlayerProgress(processedInput);
+      this.updateSaveData();
+      this.wordList.push(new WordTextBox(this, 0.5, 0.5, input, processedEntry, isNewWord));
       this.updateDisplay();
     }
   }
 
-  private updateSaveData(input: string): boolean {
+  private updatePlayerProgress(input: string): boolean {
     if (this.WORDS_FOUND.includes(input)) {
       return false;
     }
     this.WORDS_FOUND.push(input);
+    ALL_INPUT_UPGRADES.filter(x => !this.INPUT_UPGRADES.includes(x)).forEach(upgrade => {
+      const unlockCondition = INPUT_UPGRADES_CONDITIONS[upgrade] as UnlockConditionFunc;
+      if (unlockCondition(this.WORDS_FOUND)) {
+        eventsCenter.emit('UNLOCK_INPUT_UPGRADE', upgrade);
+      }
+    });
+    ALL_OTHER_UPGRADES.filter(x => !this.OTHER_UPGRADES.includes(x)).forEach(upgrade => {
+      const unlockCondition = OTHER_UPGRADES_CONDITIONS[upgrade] as UnlockConditionFunc;
+      if (unlockCondition(this.WORDS_FOUND)) {
+        eventsCenter.emit('UNLOCK_OTHER_UPGRADE', upgrade);
+      }
+    });
+    this.updateSaveData();
+    return true;
+  }
+
+  private updateSaveData(): boolean {
     const newPlayerProgress: PlayerProgress = {
       wordsFound: this.WORDS_FOUND,
-      unlocks: this.UNLOCKS,
+      inputUnlocks: this.INPUT_UPGRADES,
+      otherUnlocks: this.OTHER_UPGRADES
     };
     localStorage.setItem("playerProgress", JSON.stringify(newPlayerProgress));
     return true;
@@ -139,7 +168,7 @@ export class MainGame extends Scene {
     }
   }
 
-  private processDictionaryEntry(dictionaryEntry) {
+  private processDictionaryEntry(dictionaryEntry: JSONEntry) {
     const newEntry: WordData = {
       definitions: [],
       synonynms: [],

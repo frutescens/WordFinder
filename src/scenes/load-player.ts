@@ -1,8 +1,9 @@
 import { Scene } from "phaser";
 import { PlayerData, PlayerProgress } from "../types/player-data";
 import { Fonts } from "../enums/fonts";
-import { Unlocks } from "../enums/unlocks";
+import { InputUpgrades } from "../enums/input-upgrades";
 import { BaseScene } from "./base-scene";
+import { OtherUpgrades } from "../enums/other-upgrades";
 
 export class LoadPlayer extends Scene {
   constructor() {
@@ -23,7 +24,8 @@ export class LoadPlayer extends Scene {
     if (!localStorage.getItem("playerProgress")) {
       const playerProgress: PlayerProgress = {
         wordsFound: [] as string[],
-        unlocks: [] as Unlocks[],
+        inputUnlocks: [] as InputUpgrades[],
+        otherUnlocks: [] as OtherUpgrades[]
       };
       localStorage.setItem("playerProgress", JSON.stringify(playerProgress));
       console.log('Player Progress created.');
@@ -35,7 +37,8 @@ export class LoadPlayer extends Scene {
         const baseScene = this.scene.get('BaseScene') as BaseScene;
         const playerProgress: PlayerProgress = JSON.parse(localStorage.getItem('playerProgress')!);
         baseScene.WORDS_FOUND = playerProgress.wordsFound;
-        baseScene.UNLOCKS = playerProgress.unlocks;
+        baseScene.INPUT_UPGRADES = playerProgress.inputUnlocks;
+        baseScene.OTHER_UPGRADES = playerProgress.otherUnlocks;
         console.log('hello');
         baseScene.update();
         this.scene.resume('BaseScene');

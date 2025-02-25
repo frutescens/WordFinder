@@ -1,11 +1,13 @@
 import { Scene } from "phaser";
-import WordDict from "../word_list.json" assert {type: 'json'};
-import { Unlocks } from "../enums/unlocks";
+import { InputUpgrades } from "../enums/input-upgrades";
+import { OtherUpgrades } from "../enums/other-upgrades";
+import { MainGameData } from "./main-game";
 
 
 export class BaseScene extends Scene {
   public WORDS_FOUND: string[];
-  public UNLOCKS: Unlocks[];
+  public INPUT_UPGRADES: InputUpgrades[];
+  public OTHER_UPGRADES: OtherUpgrades[];
 
   constructor() {
     super({ key: "BaseScene" });
@@ -13,13 +15,13 @@ export class BaseScene extends Scene {
 
   create() {
     this.scene.sendToBack('LoadPlayer');
-    this.scene.start('LoadPlayer');
+    this.scene.launch('LoadPlayer');
   }
 
   update() {
-    if (this.WORDS_FOUND && this.UNLOCKS) {
+    if (this.WORDS_FOUND && this.INPUT_UPGRADES) {
       this.scene.stop('LoadPlayer');
-      this.scene.start('MainGame', { dictionary: WordDict, wordsFound: this.WORDS_FOUND, unlocks: this.UNLOCKS });
+      this.scene.start('MainGame', { wordsFound: this.WORDS_FOUND, inputUpgrades: this.INPUT_UPGRADES, otherUpgrades: this.OTHER_UPGRADES } as MainGameData);
     }
   }
 }
