@@ -4,7 +4,8 @@ export enum OtherUpgrades {
     CAT, 
     MISSING_MEANING,
     FILL_IN_THE_BLANK,
-    CATEGORIES
+    CATEGORIES,
+    TEST
 }
 
 export const ALL_OTHER_UPGRADES: OtherUpgrades[] = [
@@ -13,5 +14,6 @@ export const ALL_OTHER_UPGRADES: OtherUpgrades[] = [
     OtherUpgrades.CAT,
     OtherUpgrades.MISSING_MEANING,
     OtherUpgrades.FILL_IN_THE_BLANK,
-    OtherUpgrades.CATEGORIES
+    OtherUpgrades.CATEGORIES,
+    OtherUpgrades.TEST
 ]

@@ -16,6 +16,7 @@ export class UnlockManager extends Scene {
     private scope: MainGame;
     private inputUpgrades: InputUpgrades[];
     private otherUpgrades: OtherUpgrades[];
+    private bannerContainer: UnlockBanner;
 
     constructor() {
         super({key: 'UnlockManager'});
@@ -30,13 +31,20 @@ export class UnlockManager extends Scene {
     create() {
         eventsCenter.on('UNLOCK_INPUT_UPGRADE', (upgrade: InputUpgrades) => {
             this.scope.INPUT_UPGRADES.push(upgrade);
-            const bannerContainer = new UnlockBanner(this.scope, 0, 0, upgrade, UpgradeCategories.INPUT);
-            bannerContainer.createBanner();
+            this.bannerContainer = new UnlockBanner(this.scope, 0, 0, upgrade, UpgradeCategories.INPUT);
+            this.bannerContainer.createBanner();
+            this.scope.add.existing(this.bannerContainer);
         }, this);
         eventsCenter.on('UNLOCK_OTHER_UPGRADE', (upgrade: OtherUpgrades) => {
             this.scope.OTHER_UPGRADES.push(upgrade);
-            const bannerContainer = new UnlockBanner(this.scope, 0, 0, upgrade, UpgradeCategories.OTHER);
-            bannerContainer.createBanner();
+            this.bannerContainer = new UnlockBanner(this.scope, 0, 0, upgrade, UpgradeCategories.OTHER);
+            this.bannerContainer.createBanner();
+            this.scope.add.existing(this.bannerContainer);
         }, this);
+        eventsCenter.on('DESTROY_EVENT_BANNER', () => {
+            if (this.bannerContainer) {
+                this.bannerContainer.destroy();
+            }
+        })
     }
 }

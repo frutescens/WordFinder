@@ -34,6 +34,9 @@ export const OTHER_UPGRADES_CONDITIONS = {
   [OtherUpgrades.CAT]: (wordsFound: string[]) => {
     return wordsFound.includes("CAT");
   },
+  [OtherUpgrades.TEST]: (wordsFound: string[]) => {
+    return wordsFound.includes("TEST");
+  },
   [OtherUpgrades.MISSING_MEANING]: (wordsFound: string[]) => {
     return wordsFound.length >= 5000;
   },
