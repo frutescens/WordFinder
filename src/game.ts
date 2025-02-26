@@ -1,17 +1,19 @@
 import Phaser from "phaser";
 import BBCodeTextPlugin from "phaser3-rex-plugins/plugins/bbcodetext-plugin";
 import InputTextPlugin from "phaser3-rex-plugins/plugins/inputtext-plugin";
+import DataManagerPlugin from "phaser3-rex-plugins/plugins/localstorage-data-plugin";
 import TransitionImagePackPlugin from "phaser3-rex-plugins/templates/transitionimagepack/transitionimagepack-plugin";
 import UIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin";
 import pkg from "../package.json";
 import { BaseScene } from "./scenes/base-scene";
-import { LoadPlayer } from "./scenes/load-player";
+import { SaveManager } from "./scenes/save-manager";
 import { MainGame } from "./scenes/main-game";
 import { UnlockManager } from "./scenes/unlock-manager";
 
 declare module 'phaser' {
   interface Scene {
     rexUI: UIPlugin;
+    dataManager: DataManagerPlugin;
   }
 }
 export const game: Phaser.Game = initGame();
@@ -49,6 +51,11 @@ function initGame() {
           plugin: UIPlugin,
           mapping: "rexUI",
         },
+        {
+          key: 'rexDataManagerPlugin',
+          plugin: DataManagerPlugin,
+          mapping: 'dataManager'
+        }
       ],
     },
     input: {
@@ -61,7 +68,7 @@ function initGame() {
       createContainer: true,
     },
     pixelArt: true,
-    scene: [BaseScene, LoadPlayer, MainGame, UnlockManager],
+    scene: [BaseScene, SaveManager, MainGame, UnlockManager],
     version: pkg.version,
   });
 }

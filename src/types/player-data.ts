@@ -10,6 +10,6 @@ export type PlayerData = {
 
 export type PlayerProgress = {
     wordsFound: string[];
-    inputUnlocks: InputUpgrades[];
-    otherUnlocks: OtherUpgrades[];
+    inputUpgrades: InputUpgrades[];
+    otherUpgrades: OtherUpgrades[];
 }

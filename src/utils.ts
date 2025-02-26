@@ -1,3 +1,4 @@
+import eventsCenter from "./events-center";
 import { PlayerProgress } from "./types/player-data";
 
 

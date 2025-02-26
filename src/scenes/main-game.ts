@@ -10,11 +10,10 @@ import { ALL_OTHER_UPGRADES, OtherUpgrades } from "../enums/other-upgrades";
 import WordDict from "../word_list.json" assert {type: 'json'};
 import { INPUT_UPGRADES_CONDITIONS, OTHER_UPGRADES_CONDITIONS, UnlockConditionFunc } from "../upgrades/unlock-conditions";
 import eventsCenter from "../events-center";
+import { NUMBER_OF_UPGRADES } from "../enums/upgrade-categories";
 
 export type MainGameData = {
-  wordsFound: string[],
-  inputUpgrades: InputUpgrades[],
-  otherUpgrades: OtherUpgrades[]
+  playerProgress: PlayerProgress
 }
 
 export class MainGame extends Scene {
@@ -37,7 +36,7 @@ export class MainGame extends Scene {
     this.load.image("background", "./assets/background.png");
   }
 
-  init(data: MainGameData) {
+  init(data: PlayerProgress) {
     this.DICTIONARY_WORDS = Object.keys(WordDict);
     this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
     this.WORDS_FOUND = data.wordsFound;
@@ -139,10 +138,10 @@ export class MainGame extends Scene {
   private updateSaveData(): boolean {
     const newPlayerProgress: PlayerProgress = {
       wordsFound: this.WORDS_FOUND,
-      inputUnlocks: this.INPUT_UPGRADES,
-      otherUnlocks: this.OTHER_UPGRADES
+      inputUpgrades: this.INPUT_UPGRADES,
+      otherUpgrades: this.OTHER_UPGRADES
     };
-    localStorage.setItem("playerProgress", JSON.stringify(newPlayerProgress));
+    eventsCenter.emit('UPDATE_PLAYER_PROGRESS', newPlayerProgress);
     return true;
   }
 
@@ -156,7 +155,8 @@ export class MainGame extends Scene {
       "/" +
       this.DICTIONARY_SIZE.toString();
     textObjects[0].setText(WORDS_FOUND_LABEL + "\n" + wordsFoundCount);
-    textObjects[1].setText(UNLOCKS_FOUND_LABEL);
+    const upgradesCount = (this.INPUT_UPGRADES.length + this.OTHER_UPGRADES.length).toString() + "/" + NUMBER_OF_UPGRADES.toString();
+    textObjects[1].setText(UNLOCKS_FOUND_LABEL + "\n" + upgradesCount);
     let prevHeight = 0;
     if (this.wordList) {
       this.wordList.forEach((x, i) => {
