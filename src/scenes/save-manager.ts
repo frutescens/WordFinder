@@ -43,9 +43,9 @@ export class SaveManager extends Scene {
       this.dataManager.setItem(upgradeKey, 'playerProgress', upgradeProgress);
       this.loadPlayerProgress(true);
     });
-    eventsCenter.addListener('ADD_NEW_WORD', (word: string) => {
-      const wordsFound = this.dataManager.getItem('wordsFound', 'playerProgress');
-      wordsFound.push(word); 
+    eventsCenter.addListener('ADD_NEW_WORDS', (words: string[]) => {
+      console.log(words);
+      const wordsFound = this.dataManager.getItem('wordsFound', 'playerProgress').concat(...words); 
       this.dataManager.setItem('wordsFound', 'playerProgress', wordsFound);
       this.loadPlayerProgress(true);
     });

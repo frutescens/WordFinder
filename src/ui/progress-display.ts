@@ -30,7 +30,6 @@ export class ProgressDisplay extends Phaser.GameObjects.Container {
       "/" +
       DICTIONARY_SIZE.toString();
     this.wordsFoundText.text = this.WORDS_FOUND_LABEL + "\n" + wordsFoundCount;
-    console.log('hello');
     const upgradesCount = (playerProgress.inputUpgrades.length + playerProgress.otherUpgrades.length).toString() + "/" + TOTAL_UPGRADES_COUNT.toString();
     this.upgradesFoundText.text = this.UPGRADES_FOUND_LABEL + "\n" + upgradesCount;
   }
