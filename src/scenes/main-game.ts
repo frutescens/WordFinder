@@ -1,14 +1,11 @@
 import { Scene } from "phaser";
-import { ALL_INPUT_UPGRADES, InputUpgrades } from "../enums/input-upgrades";
 import { PlayerProgress } from "../types/player-data";
 import { Definition, JSONEntry, WordData } from "../types/word-data";
 import { uppercaseList } from "../utils";
 import { TextEdit } from "phaser3-rex-plugins/plugins/textedit";
 import { UNLOCKS_FOUND_LABEL, WORDS_FOUND_LABEL } from "../ui/labels";
 import { WordTextBox } from "../ui/word-text-box";
-import { ALL_OTHER_UPGRADES, OtherUpgrades } from "../enums/other-upgrades";
 import WordDict from "../word_list.json" assert {type: 'json'};
-import { INPUT_UPGRADES_CONDITIONS, OTHER_UPGRADES_CONDITIONS, UnlockConditionFunc } from "../upgrades/unlock-conditions";
 import eventsCenter from "../events-center";
 import { NUMBER_OF_UPGRADES } from "../enums/upgrade-categories";
 
@@ -20,9 +17,6 @@ export class MainGame extends Scene {
   public DICTIONARY_WORDS: string[];
   public DICTIONARY_SIZE: number;
   public PLAYER_PROGRESS: PlayerProgress;
-  public WORDS_FOUND: string[];
-  public INPUT_UPGRADES: InputUpgrades[];
-  public OTHER_UPGRADES: OtherUpgrades[];
   private playerInput: Phaser.GameObjects.Text;
   private editor: TextEdit;
   private progressZone: Phaser.GameObjects.Container;
@@ -37,7 +31,7 @@ export class MainGame extends Scene {
     this.load.image("background", "./assets/background.png");
   }
 
-  init(data: PlayerProgress) {
+  init() {
     this.DICTIONARY_WORDS = Object.keys(WordDict);
     this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
     this.PLAYER_PROGRESS = this.getPlayerProgress();
