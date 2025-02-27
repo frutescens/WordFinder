@@ -4,6 +4,7 @@ import { Fonts } from "../enums/fonts";
 import { InputUpgrades } from "../enums/input-upgrades";
 import { OtherUpgrades } from "../enums/other-upgrades";
 import eventsCenter from "../events-center";
+import { UpgradeCategories } from "../enums/upgrade-categories";
 
 export class SaveManager extends Scene {
 
@@ -35,26 +36,33 @@ export class SaveManager extends Scene {
   }
 
   create(): void {
-    eventsCenter.addListener(
-      "UPDATE_PLAYER_PROGRESS",
-      (playerProgress: PlayerProgress) => {
-        this.dataManager.setItem('wordsFound', 'playerProgress', playerProgress.wordsFound);
-        this.dataManager.setItem('inputUpgrades', 'playerProgress', playerProgress.inputUpgrades);
-        this.dataManager.setItem('otherUpgrades', 'playerProgress', playerProgress.otherUpgrades);
-        this.loadPlayerProgress();
-      }
-    );
+    eventsCenter.addListener('UNLOCK_UPGRADE', (upgrade: InputUpgrades | OtherUpgrades, upgradeCategory: UpgradeCategories) => {
+      const upgradeKey = upgradeCategory === UpgradeCategories.INPUT ? 'inputUpgrades' : 'otherUpgrades';
+      const upgradeProgress = this.dataManager.getItem(upgradeKey, 'playerProgress');
+      upgradeProgress.push(upgrade);
+      this.dataManager.setItem(upgradeKey, 'playerProgress', upgradeProgress);
+      this.loadPlayerProgress(true);
+    });
+    eventsCenter.addListener('ADD_NEW_WORD', (word: string) => {
+      const wordsFound = this.dataManager.getItem('wordsFound', 'playerProgress');
+      wordsFound.push(word); 
+      this.dataManager.setItem('wordsFound', 'playerProgress', wordsFound);
+      this.loadPlayerProgress(true);
+    });
   }
 
   update() {
     this.loadPlayerProgress();
   }
 
-  loadPlayerProgress(): void {
+  loadPlayerProgress(hasChange: boolean = false): void {
     this.registry.set('playerProgress', { 
       wordsFound: this.dataManager.getItem('wordsFound', 'playerProgress') ?? [] as string[],
       inputUpgrades: this.dataManager.getItem('inputUpgrades', 'playerProgress') ?? [] as InputUpgrades[],
       otherUpgrades: this.dataManager.getItem('otherUpgrades', 'playerProgress') ?? [] as OtherUpgrades[]
     } as PlayerProgress);
+    if (hasChange) {
+      eventsCenter.emit('PLAYER_DATA_CHANGED');
+    }
   }
 }

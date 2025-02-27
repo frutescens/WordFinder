@@ -19,6 +19,7 @@ export type MainGameData = {
 export class MainGame extends Scene {
   public DICTIONARY_WORDS: string[];
   public DICTIONARY_SIZE: number;
+  public PLAYER_PROGRESS: PlayerProgress;
   public WORDS_FOUND: string[];
   public INPUT_UPGRADES: InputUpgrades[];
   public OTHER_UPGRADES: OtherUpgrades[];
@@ -39,17 +40,16 @@ export class MainGame extends Scene {
   init(data: PlayerProgress) {
     this.DICTIONARY_WORDS = Object.keys(WordDict);
     this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
-    this.WORDS_FOUND = data.wordsFound;
-    this.INPUT_UPGRADES = data.inputUpgrades;
-    this.OTHER_UPGRADES = data.otherUpgrades;
+    this.PLAYER_PROGRESS = this.getPlayerProgress();
+    eventsCenter.on('PLAYER_DATA_CHANGED', () => {
+      this.PLAYER_PROGRESS = this.getPlayerProgress();
+    });
   }
 
   create() {
     this.add.image(0, 0, "background");
     this.scene.launch("UnlockManager", {
-      scope: this,
-      inputUpgrades: this.INPUT_UPGRADES,
-      otherUpgrades: this.OTHER_UPGRADES,
+      scope: this
     });
     this.createPlayerInput();
     this.createPlayerProgress();
@@ -57,6 +57,10 @@ export class MainGame extends Scene {
     this.input.keyboard?.on('keyup-ENTER', () => {
       this.processWord(this.playerInput.text);
     });
+  }
+
+  private getPlayerProgress(): PlayerProgress {
+    return this.registry.get('playerProgress') as PlayerProgress;
   }
 
   private createPlayerInput(): void {
@@ -106,43 +110,19 @@ export class MainGame extends Scene {
       return;
     } else {
       const processedEntry = this.processDictionaryEntry(dictionaryEntry);
-      const isNewWord = !this.WORDS_FOUND.includes(processedInput);
+      const isNewWord = !this.PLAYER_PROGRESS.wordsFound.includes(processedInput);
       this.updatePlayerProgress(processedInput);
-      this.updateSaveData();
       this.wordList.push(new WordTextBox(this, 0.5, 0.5, input, processedEntry, isNewWord));
       this.updateDisplay();
     }
   }
 
-  private updatePlayerProgress(input: string): boolean {
-    if (this.WORDS_FOUND.includes(input)) {
-      return false;
+  private updatePlayerProgress(input: string): void {
+    if (this.PLAYER_PROGRESS.wordsFound.includes(input)) {
+      return;
     }
-    this.WORDS_FOUND.push(input);
-    ALL_INPUT_UPGRADES.filter(x => !this.INPUT_UPGRADES.includes(x)).forEach(upgrade => {
-      const unlockCondition = INPUT_UPGRADES_CONDITIONS[upgrade] as UnlockConditionFunc;
-      if (unlockCondition(this.WORDS_FOUND)) {
-        eventsCenter.emit('UNLOCK_INPUT_UPGRADE', upgrade);
-      }
-    });
-    ALL_OTHER_UPGRADES.filter(x => !this.OTHER_UPGRADES.includes(x)).forEach(upgrade => {
-      const unlockCondition = OTHER_UPGRADES_CONDITIONS[upgrade] as UnlockConditionFunc;
-      if (unlockCondition(this.WORDS_FOUND)) {
-        eventsCenter.emit('UNLOCK_OTHER_UPGRADE', upgrade);
-      }
-    });
-    this.updateSaveData();
-    return true;
-  }
-
-  private updateSaveData(): boolean {
-    const newPlayerProgress: PlayerProgress = {
-      wordsFound: this.WORDS_FOUND,
-      inputUpgrades: this.INPUT_UPGRADES,
-      otherUpgrades: this.OTHER_UPGRADES
-    };
-    eventsCenter.emit('UPDATE_PLAYER_PROGRESS', newPlayerProgress);
-    return true;
+    eventsCenter.emit('ADD_NEW_WORD', input);
+    eventsCenter.emit('CHECK_FOR_UNLOCKS', this.PLAYER_PROGRESS);
   }
 
   private updateDisplay() {
@@ -151,11 +131,11 @@ export class MainGame extends Scene {
       true
     ) as Phaser.GameObjects.Text[];
     const wordsFoundCount =
-      this.WORDS_FOUND.length.toString() +
+      this.PLAYER_PROGRESS.wordsFound.length.toString() +
       "/" +
       this.DICTIONARY_SIZE.toString();
     textObjects[0].setText(WORDS_FOUND_LABEL + "\n" + wordsFoundCount);
-    const upgradesCount = (this.INPUT_UPGRADES.length + this.OTHER_UPGRADES.length).toString() + "/" + NUMBER_OF_UPGRADES.toString();
+    const upgradesCount = (this.PLAYER_PROGRESS.inputUpgrades.length + this.PLAYER_PROGRESS.otherUpgrades.length).toString() + "/" + NUMBER_OF_UPGRADES.toString();
     textObjects[1].setText(UNLOCKS_FOUND_LABEL + "\n" + upgradesCount);
     let prevHeight = 0;
     if (this.wordList) {
