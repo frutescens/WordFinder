@@ -11,9 +11,10 @@ export class UnlockBanner extends Phaser.GameObjects.Container {
         super(scene, x, y);
         this.unlock = unlock;
         this.unlockCategory = unlockCategory;
+        this.createBanner();
     }
 
-    public createBanner(): void {
+    private createBanner(): void {
         this.setPosition(225, 550);
         const bannerColor = this.unlockCategory === UpgradeCategories.INPUT ? 0xff832f1 : 0xd2832f6
         const eventBannerBg = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, 350, 300, bannerColor);

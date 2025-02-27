@@ -7,10 +7,14 @@ import { UNLOCKS_FOUND_LABEL, WORDS_FOUND_LABEL } from "../ui/labels";
 import { WordTextBox } from "../ui/word-text-box";
 import WordDict from "../word_list.json" assert {type: 'json'};
 import eventsCenter from "../events-center";
-import { NUMBER_OF_UPGRADES } from "../enums/upgrade-categories";
+import { TOTAL_UPGRADES } from "../enums/upgrade-categories";
 
 export type MainGameData = {
   playerProgress: PlayerProgress
+}
+
+export type BasicChildData = {
+  scope: MainGame
 }
 
 export class MainGame extends Scene {
@@ -19,7 +23,6 @@ export class MainGame extends Scene {
   public PLAYER_PROGRESS: PlayerProgress;
   private playerInput: Phaser.GameObjects.Text;
   private editor: TextEdit;
-  private progressZone: Phaser.GameObjects.Container;
   private wordBox: Phaser.GameObjects.Container;
   private wordList: WordTextBox[];
 
@@ -34,9 +37,8 @@ export class MainGame extends Scene {
   init() {
     this.DICTIONARY_WORDS = Object.keys(WordDict);
     this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
-    this.PLAYER_PROGRESS = this.getPlayerProgress();
     eventsCenter.on('PLAYER_DATA_CHANGED', () => {
-      this.PLAYER_PROGRESS = this.getPlayerProgress();
+      this.setPlayerProgress();
     });
   }
 
@@ -45,16 +47,20 @@ export class MainGame extends Scene {
     this.scene.launch("UnlockManager", {
       scope: this
     });
+    this.scene.launch('ProgressDisplay', {
+      scope: this
+    })
     this.createPlayerInput();
-    this.createPlayerProgress();
     this.createWordBox();
     this.input.keyboard?.on('keyup-ENTER', () => {
       this.processWord(this.playerInput.text);
     });
+    this.setPlayerProgress();
   }
 
-  private getPlayerProgress(): PlayerProgress {
-    return this.registry.get('playerProgress') as PlayerProgress;
+  private setPlayerProgress(): void {
+    this.PLAYER_PROGRESS = this.registry.get('playerProgress') as PlayerProgress;
+    eventsCenter.emit('UPDATE_PROGRESS_DISPLAY', this.PLAYER_PROGRESS);
   }
 
   private createPlayerInput(): void {
@@ -71,18 +77,6 @@ export class MainGame extends Scene {
     this.playerInput.setBackgroundColor("RED");
     inputZone.add(textHeader);
     inputZone.add(this.playerInput);
-  }
-
-  private createPlayerProgress(): void {
-    this.progressZone = this.add.container(0, 0);
-    this.progressZone.setPosition(0, 850);
-    this.progressZone.add(
-      this.add.text(10, 0.5, WORDS_FOUND_LABEL, { fontSize: 50 })
-    );
-    this.progressZone.add(
-      this.add.text(10, 105, UNLOCKS_FOUND_LABEL, { fontSize: 50 })
-    );
-    this.updateDisplay();
   }
 
   private createWordBox(): void {
@@ -120,17 +114,6 @@ export class MainGame extends Scene {
   }
 
   private updateDisplay() {
-    const textObjects = this.progressZone.getAll(
-      "visible",
-      true
-    ) as Phaser.GameObjects.Text[];
-    const wordsFoundCount =
-      this.PLAYER_PROGRESS.wordsFound.length.toString() +
-      "/" +
-      this.DICTIONARY_SIZE.toString();
-    textObjects[0].setText(WORDS_FOUND_LABEL + "\n" + wordsFoundCount);
-    const upgradesCount = (this.PLAYER_PROGRESS.inputUpgrades.length + this.PLAYER_PROGRESS.otherUpgrades.length).toString() + "/" + NUMBER_OF_UPGRADES.toString();
-    textObjects[1].setText(UNLOCKS_FOUND_LABEL + "\n" + upgradesCount);
     let prevHeight = 0;
     if (this.wordList) {
       this.wordList.forEach((x, i) => {

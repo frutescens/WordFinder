@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 import { InputUpgrades } from "../enums/input-upgrades";
 import { OtherUpgrades } from "../enums/other-upgrades";
-import { MainGame } from "./main-game";
+import { BasicChildData, MainGame } from "./main-game";
 import eventsCenter from "../events-center";
 import { UnlockBanner } from "../ui/unlock-banner";
 import { ALL_INPUT_UPGRADES } from "../enums/input-upgrades";
@@ -22,7 +22,7 @@ export class UnlockManager extends Scene {
     super({ key: "UnlockManager" });
   }
 
-  init(data: UnlockManagerData) {
+  init(data: BasicChildData) {
     this.scope = data.scope;
   }
 
@@ -61,7 +61,6 @@ export class UnlockManager extends Scene {
           upgrade,
           upgradeCategory
         );
-        this.bannerContainer.createBanner();
         this.scope.add.existing(this.bannerContainer);
       },
       this

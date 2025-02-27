@@ -6,4 +6,4 @@ export enum UpgradeCategories {
     OTHER
 }
 
-export const NUMBER_OF_UPGRADES = ALL_INPUT_UPGRADES.length + ALL_OTHER_UPGRADES.length;
+export const TOTAL_UPGRADES = ALL_INPUT_UPGRADES.length + ALL_OTHER_UPGRADES.length;
