@@ -2,6 +2,9 @@ import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
 import { DICTIONARY_SIZE, TOTAL_UPGRADES_COUNT } from "../utils";
 
+/**
+ * Progress Display found on the bottom left corner of the box. 
+ */
 export class ProgressDisplay extends Phaser.GameObjects.Container {
   private textConfig: Phaser.Types.GameObjects.Text.TextStyle;
   private wordsFoundText: Phaser.GameObjects.Text;

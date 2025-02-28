@@ -1,3 +1,7 @@
+
+/**
+ * UI Container for the Input Box found on the upper left-hand corner of the game window
+ */
 export class InputBox extends Phaser.GameObjects.Container {
     private readonly INPUT_TEXT_LABEL: string = 'Input a Word!';
     private readonly FONT_SIZE: number = 50;
