@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
 import eventsCenter from "../events-center";
+import { DICTIONARY_KEYS } from "../utils";
 
 export type MainGameData = {
   playerProgress: PlayerProgress
@@ -41,7 +42,7 @@ export class MainGame extends Scene {
         words = [words];
       };
       words.forEach(w => {
-        if (!this.newWordBus.includes(w) && !this.PLAYER_PROGRESS.wordsFound.includes(w)) {
+        if (!this.newWordBus.includes(w) && !this.PLAYER_PROGRESS.wordsFound.includes(w) && DICTIONARY_KEYS.includes(w)) {
           this.newWordBus.push(w);
         }
       });
