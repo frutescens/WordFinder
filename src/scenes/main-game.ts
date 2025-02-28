@@ -21,6 +21,7 @@ export class MainGame extends Scene {
   private newWordBus: string[];
   private wordBox: Phaser.GameObjects.Container;
   private wordList: WordTextBox[];
+  private childSceneData: BasicChildData;
 
   constructor() {
     super({ key: "MainGame" });
@@ -38,29 +39,33 @@ export class MainGame extends Scene {
       this.setPlayerProgress();
     });
     eventsCenter.on('NEW_INPUT_RECEIVED', (playerInput: string) => {
-      this.newWordBus.push(playerInput);
-      eventsCenter.emit('APPLY_STREAK', this.newWordBus);
+      eventsCenter.emit('ADD_TO_BUS', playerInput);
+      eventsCenter.emit('UPDATE_STREAK_TRACKER', playerInput[0]);
       eventsCenter.emit('APPLY_UPGRADES', this.newWordBus);
-      eventsCenter.emit('STORE_ADDITIONAL_WORDS', this.newWordBus);
+      eventsCenter.emit('UPDATE_PLAYER_PROGRESS');
     });
-    eventsCenter.on('STORE_ADDITIONAL_WORDS', (addedWords: string[]) => {
-      this.newWordBus = ([] as string[]).concat(addedWords);
+    eventsCenter.on('ADD_TO_BUS', (words: string | string[]) => {
+      if (!Array.isArray(words)) {
+        words = [words];
+      };
+      words.forEach(w => {
+        if (!this.newWordBus.includes(w)) {
+          this.newWordBus.push(w);
+        }
+      });
+    });
+    eventsCenter.on('UPDATE_PLAYER_PROGRESS', () => {
       this.updatePlayerProgress();
     });
+    this.childSceneData = { scope: this };
   }
 
   create() {
     this.add.image(0, 0, "background");
-    this.scene.launch("UnlockManager", {
-      scope: this
-    });
-    this.scene.launch('ProgressDisplay', {
-      scope: this
-    });
-    this.scene.launch('InputManager', {
-      scope: this
-    });
-    this.createWordBox();
+    this.scene.launch("UnlockManager", this.childSceneData);
+    this.scene.launch('ProgressDisplay',this.childSceneData);
+    this.scene.launch('InputManager', this.childSceneData);
+    this.scene.launch('StreakTracker', this.childSceneData);
     this.setPlayerProgress();
   }
 
@@ -69,35 +74,13 @@ export class MainGame extends Scene {
     eventsCenter.emit('UPDATE_PROGRESS_DISPLAY', this.PLAYER_PROGRESS);
   }
 
-  private createWordBox(): void {
-    this.wordBox = this.add.container(0, 0);
-    this.wordBox.setPosition(800, 10);
-    this.wordBox.add(
-      new Phaser.GameObjects.Rectangle(this, 155.5, 525, 800, 950, 0xff83ff)
-    );
-    this.wordList = [];
-    this.wordList.forEach((element) => {
-      this.wordBox.add(element);
-    });
-  }
-
   private updatePlayerProgress(): void {
     eventsCenter.emit('ADD_NEW_WORDS', this.newWordBus);
     eventsCenter.emit('CHECK_FOR_UNLOCKS', this.PLAYER_PROGRESS);
+    //this.scene.launch('WordDisplay', this.childSceneData);
     this.newWordBus = [];
   }
 
-  private updateDisplay() {
-    let prevHeight = 0;
-    if (this.wordList) {
-      this.wordList.forEach((x, i) => {
-        x.processText();
-        x.setPosition(-225, 65 + prevHeight + 5);
-        prevHeight = x.height;
-        this.wordBox.add(x);
-      });
-    }
-  }
 
   private processDictionaryEntry(dictionaryEntry: JSONEntry) {
     const newEntry: WordData = {

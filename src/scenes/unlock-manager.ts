@@ -52,7 +52,7 @@ export class UnlockManager extends Scene {
       });
     });
     eventsCenter.on(
-      "UNLOCK_INPUT_UPGRADE",
+      "SHOW_UNLOCK_BANNER",
       (upgrade: InputUpgrades | OtherUpgrades, upgradeCategory: UpgradeCategories) => {
         this.bannerContainer = new UnlockBanner(
           this.scope,
