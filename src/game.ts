@@ -12,6 +12,7 @@ import { UnlockManager } from "./scenes/unlock-manager";
 import { ProgressDisplayManager } from "./scenes/progress-display-manager";
 import { InputManager } from "./scenes/input-manager";
 import { StreakTracker } from "./scenes/streak-tracker-assistant";
+import { UpgradeManager } from "./scenes/upgrade-manager";
 
 declare module 'phaser' {
   interface Scene {
@@ -71,7 +72,7 @@ function initGame() {
       createContainer: true,
     },
     pixelArt: true,
-    scene: [BaseScene, SaveManager, MainGame, UnlockManager, ProgressDisplayManager, InputManager, StreakTracker],
+    scene: [BaseScene, SaveManager, MainGame, UnlockManager, ProgressDisplayManager, InputManager, StreakTracker, UpgradeManager],
     version: pkg.version,
   });
 }

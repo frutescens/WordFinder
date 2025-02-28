@@ -1,10 +1,8 @@
 import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
 import { Fonts } from "../enums/fonts";
-import { InputUpgrades } from "../enums/input-upgrades";
-import { OtherUpgrades } from "../enums/other-upgrades";
+import { ALL_INPUT_UPGRADES, InputUpgrades } from "../enums/input-upgrades";
 import eventsCenter from "../events-center";
-import { UpgradeCategories } from "../enums/upgrade-categories";
 
 export class SaveManager extends Scene {
 
@@ -39,6 +37,10 @@ export class SaveManager extends Scene {
       const upgradeProgress = this.dataManager.getItem('inputUpgrades', 'playerProgress');
       upgradeProgress.push(upgrade);
       this.dataManager.setItem('inputUpgrades', 'playerProgress', upgradeProgress);
+      this.loadPlayerProgress(true);
+    });
+    eventsCenter.addListener('UNLOCK_ALL_UPGRADES', () => {
+      this.dataManager.setItem('inputUpgrades', 'playerProgress', ALL_INPUT_UPGRADES);
       this.loadPlayerProgress(true);
     });
     eventsCenter.addListener('ADD_NEW_WORDS', (words: string[]) => {

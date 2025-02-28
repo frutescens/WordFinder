@@ -7,8 +7,7 @@ export enum InputUpgrades {
   SEVEN_LETTERS,
   SYNONYMS,
   ANTONYMS,
-  CAT,
-  TEST
+  CAT
 }
 
 export const ALL_INPUT_UPGRADES = [
@@ -20,8 +19,7 @@ export const ALL_INPUT_UPGRADES = [
   InputUpgrades.SEVEN_LETTERS,
   InputUpgrades.SYNONYMS,
   InputUpgrades.ANTONYMS,
-  InputUpgrades.CAT,
-  InputUpgrades.TEST
+  InputUpgrades.CAT
 ];
 
 export const TOTAL_UPGRADES = ALL_INPUT_UPGRADES.length;

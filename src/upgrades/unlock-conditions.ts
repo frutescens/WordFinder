@@ -29,11 +29,8 @@ export const INPUT_UPGRADES_CONDITIONS = {
     return wordsFound.length >= 20000;
   },
   [InputUpgrades.CAT]: (wordsFound: string[]) => {
-    return wordsFound.includes("CAT");
-  },
-  [InputUpgrades.TEST]: (wordsFound: string[]) => {
-    return wordsFound.includes("TEST");
-  },
+    return wordsFound.includes("MUMBLE");
+  }
 };
 
 function alphabetCounter(wordsFound: string[], threshold: number): boolean {

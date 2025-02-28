@@ -1,7 +1,5 @@
 import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
-import { Definition, JSONEntry, WordData } from "../types/word-data";
-import { uppercaseList } from "../utils";
 import WordDict from "../word_list.json" assert {type: 'json'};
 import eventsCenter from "../events-center";
 
@@ -38,7 +36,7 @@ export class MainGame extends Scene {
     eventsCenter.on('NEW_INPUT_RECEIVED', (playerInput: string) => {
       eventsCenter.emit('ADD_TO_BUS', playerInput);
       eventsCenter.emit('UPDATE_STREAK_TRACKER', playerInput[0]);
-      eventsCenter.emit('APPLY_UPGRADES', this.newWordBus);
+      eventsCenter.emit('APPLY_UPGRADES', playerInput[0]);
       eventsCenter.emit('UPDATE_PLAYER_PROGRESS');
     });
     eventsCenter.on('ADD_TO_BUS', (words: string | string[]) => {
@@ -46,7 +44,7 @@ export class MainGame extends Scene {
         words = [words];
       };
       words.forEach(w => {
-        if (!this.newWordBus.includes(w)) {
+        if (!this.newWordBus.includes(w) && !this.PLAYER_PROGRESS.wordsFound.includes(w)) {
           this.newWordBus.push(w);
         }
       });
@@ -63,39 +61,19 @@ export class MainGame extends Scene {
     this.scene.launch('ProgressDisplay',this.childSceneData);
     this.scene.launch('InputManager', this.childSceneData);
     this.scene.launch('StreakTracker', this.childSceneData);
+    this.scene.launch('UpgradeManager', this.childSceneData);
     this.setPlayerProgress();
   }
 
   private setPlayerProgress(): void {
     this.PLAYER_PROGRESS = this.registry.get('playerProgress') as PlayerProgress;
     eventsCenter.emit('UPDATE_PROGRESS_DISPLAY', this.PLAYER_PROGRESS);
+    this.newWordBus = [];
   }
 
   private updatePlayerProgress(): void {
     eventsCenter.emit('ADD_NEW_WORDS', this.newWordBus);
     eventsCenter.emit('CHECK_FOR_UNLOCKS', this.PLAYER_PROGRESS);
     //this.scene.launch('WordDisplay', this.childSceneData);
-    this.newWordBus = [];
-  }
-
-
-  private processDictionaryEntry(dictionaryEntry: JSONEntry) {
-    const newEntry: WordData = {
-      definitions: [],
-      synonynms: [],
-      antonyms: [],
-    };
-    newEntry.synonynms = uppercaseList(dictionaryEntry.SYNONYMS as string[]);
-    newEntry.antonyms = uppercaseList(dictionaryEntry.ANTONYMS as string[]);
-    dictionaryEntry.MEANINGS.forEach((element) => {
-      const newMeaning: Definition = {
-        partOfSpeech: element[0],
-        meaning: element[1],
-        categories: element[2],
-        examples: element[3],
-      };
-      newEntry.definitions.push(newMeaning);
-    });
-    return newEntry;
   }
 }
