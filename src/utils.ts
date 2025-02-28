@@ -1,5 +1,4 @@
 import { ALL_INPUT_UPGRADES } from "./enums/input-upgrades";
-import { ALL_OTHER_UPGRADES } from "./enums/other-upgrades";
 import { PlayerProgress } from "./types/player-data";
 import WordDict from "./word_list.json" assert { type: "json" };
 
@@ -28,4 +27,4 @@ export function randItem<T>(items: T[]): T {
 export const DICTIONARY_KEYS = Object.keys(WordDict);
 export const DICTIONARY_SIZE = DICTIONARY_KEYS.length;
 export const TOTAL_UPGRADES_COUNT =
-  ALL_INPUT_UPGRADES.length + ALL_OTHER_UPGRADES.length;
+  ALL_INPUT_UPGRADES.length;

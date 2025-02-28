@@ -2,7 +2,6 @@ import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
 import { Definition, JSONEntry, WordData } from "../types/word-data";
 import { uppercaseList } from "../utils";
-import { WordTextBox } from "../ui/word-text-box";
 import WordDict from "../word_list.json" assert {type: 'json'};
 import eventsCenter from "../events-center";
 
@@ -19,8 +18,6 @@ export class MainGame extends Scene {
   public DICTIONARY_SIZE: number;
   public PLAYER_PROGRESS: PlayerProgress;
   private newWordBus: string[];
-  private wordBox: Phaser.GameObjects.Container;
-  private wordList: WordTextBox[];
   private childSceneData: BasicChildData;
 
   constructor() {

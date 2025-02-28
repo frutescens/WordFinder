@@ -1,14 +1,11 @@
 import { Scene } from "phaser";
 import { InputUpgrades } from "../enums/input-upgrades";
-import { OtherUpgrades } from "../enums/other-upgrades";
 import { BasicChildData, MainGame } from "./main-game";
 import eventsCenter from "../events-center";
 import { UnlockBanner } from "../ui/unlock-banner";
 import { ALL_INPUT_UPGRADES } from "../enums/input-upgrades";
-import { ALL_OTHER_UPGRADES } from "../enums/other-upgrades";
-import { UpgradeCategories } from "../enums/upgrade-categories";
 import { PlayerProgress } from "../types/player-data";
-import { INPUT_UPGRADES_CONDITIONS, OTHER_UPGRADES_CONDITIONS, UnlockConditionFunc } from "../upgrades/unlock-conditions";
+import { INPUT_UPGRADES_CONDITIONS, UnlockConditionFunc } from "../upgrades/unlock-conditions";
 
 export type UnlockManagerData = {
   scope: MainGame;
@@ -35,31 +32,19 @@ export class UnlockManager extends Scene {
           upgrade
         ] as UnlockConditionFunc;
         if (unlockCondition(currentPlayerProgress.wordsFound)) {
-          eventsCenter.emit("UNLOCK_UPGRADE", upgrade, UpgradeCategories.INPUT);
-          eventsCenter.emit('SHOW_UNLOCK_BANNER', upgrade, UpgradeCategories.INPUT);
-        }
-      });
-      ALL_OTHER_UPGRADES.filter(
-        (x) => !currentPlayerProgress.otherUpgrades.includes(x)
-      ).forEach((upgrade) => {
-        const unlockCondition = OTHER_UPGRADES_CONDITIONS[
-          upgrade
-        ] as UnlockConditionFunc;
-        if (unlockCondition(currentPlayerProgress.wordsFound)) {
-          eventsCenter.emit("UNLOCK_UPGRADE", upgrade, UpgradeCategories.OTHER);
-          eventsCenter.emit('SHOW_UNLOCK_BANNER', upgrade, UpgradeCategories.OTHER);
+          eventsCenter.emit("UNLOCK_UPGRADE", upgrade);
+          this.events.emit('SHOW_UNLOCK_BANNER', upgrade);
         }
       });
     });
-    eventsCenter.on(
+    this.events.on(
       "SHOW_UNLOCK_BANNER",
-      (upgrade: InputUpgrades | OtherUpgrades, upgradeCategory: UpgradeCategories) => {
+      (upgrade: InputUpgrades) => {
         this.bannerContainer = new UnlockBanner(
           this.scope,
           0,
           0,
-          upgrade,
-          upgradeCategory
+          upgrade
         );
         this.scope.add.existing(this.bannerContainer);
       },

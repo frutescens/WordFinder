@@ -19,7 +19,6 @@ export class SaveManager extends Scene {
       default: {
         wordsFound: [] as string[],
         inputUpgrades: [] as InputUpgrades[],
-        otherUpgrades: [] as OtherUpgrades[],
       },
       parent: this,
     });
@@ -36,11 +35,10 @@ export class SaveManager extends Scene {
   }
 
   create(): void {
-    eventsCenter.addListener('UNLOCK_UPGRADE', (upgrade: InputUpgrades | OtherUpgrades, upgradeCategory: UpgradeCategories) => {
-      const upgradeKey = upgradeCategory === UpgradeCategories.INPUT ? 'inputUpgrades' : 'otherUpgrades';
-      const upgradeProgress = this.dataManager.getItem(upgradeKey, 'playerProgress');
+    eventsCenter.addListener('UNLOCK_UPGRADE', (upgrade: InputUpgrades) => {
+      const upgradeProgress = this.dataManager.getItem('inputUpgrades', 'playerProgress');
       upgradeProgress.push(upgrade);
-      this.dataManager.setItem(upgradeKey, 'playerProgress', upgradeProgress);
+      this.dataManager.setItem('inputUpgrades', 'playerProgress', upgradeProgress);
       this.loadPlayerProgress(true);
     });
     eventsCenter.addListener('ADD_NEW_WORDS', (words: string[]) => {
@@ -58,7 +56,6 @@ export class SaveManager extends Scene {
     this.registry.set('playerProgress', { 
       wordsFound: this.dataManager.getItem('wordsFound', 'playerProgress') ?? [] as string[],
       inputUpgrades: this.dataManager.getItem('inputUpgrades', 'playerProgress') ?? [] as InputUpgrades[],
-      otherUpgrades: this.dataManager.getItem('otherUpgrades', 'playerProgress') ?? [] as OtherUpgrades[]
     } as PlayerProgress);
     if (hasChange) {
       eventsCenter.emit('PLAYER_DATA_CHANGED');

@@ -1,23 +1,18 @@
 import { InputUpgrades } from "../enums/input-upgrades";
-import { OtherUpgrades } from "../enums/other-upgrades";
-import { UpgradeCategories } from "../enums/upgrade-categories";
 import eventsCenter from "../events-center";
 
 export class UnlockBanner extends Phaser.GameObjects.Container {
-    private unlock: InputUpgrades | OtherUpgrades;
-    private unlockCategory: UpgradeCategories;
+    private unlock: InputUpgrades;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, unlock: InputUpgrades | OtherUpgrades, unlockCategory: UpgradeCategories) {
+    constructor(scene: Phaser.Scene, x: number, y: number, unlock: InputUpgrades) {
         super(scene, x, y);
         this.unlock = unlock;
-        this.unlockCategory = unlockCategory;
         this.createBanner();
     }
 
     private createBanner(): void {
         this.setPosition(225, 550);
-        const bannerColor = this.unlockCategory === UpgradeCategories.INPUT ? 0x3f832f1 : 0xd2832f6
-        const eventBannerBg = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, 350, 300, bannerColor);
+        const eventBannerBg = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, 350, 300, 0x3f832f1);
         const bannerText = new Phaser.GameObjects.Text(this.scene, 0, 0, 'New Unlock!', { fontSize: 20});
         bannerText.setPosition(-60, -60);
         this.add(eventBannerBg);

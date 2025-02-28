@@ -7,7 +7,6 @@ import eventsCenter from "../events-center";
 export class InputManager extends Phaser.Scene {
   private scope: MainGame;
   private inputBox: InputBox;
-  private inputEditor: TextEdit;
   private newWordsFound: string[];
 
   constructor() {
@@ -22,7 +21,7 @@ export class InputManager extends Phaser.Scene {
     this.newWordsFound = [];
     this.inputBox = new InputBox(this.scope, 0, 0);
     this.inputBox.inputText.setInteractive().on("pointerdown", () => {
-      this.inputEditor = this.scope.rexUI.edit(this.inputBox.inputText);
+      this.scope.rexUI.edit(this.inputBox.inputText);
     });
     this.input.keyboard?.on("keyup-ENTER", () => {
       this.newWordsFound = [];

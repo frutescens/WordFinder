@@ -22,29 +22,17 @@ export const INPUT_UPGRADES_CONDITIONS = {
   [InputUpgrades.SEVEN_LETTERS]: (wordsFound: string[]) => {
     return wordLengthCounter(wordsFound, 7, 100);
   },
-};
-
-export const OTHER_UPGRADES_CONDITIONS = {
-  [OtherUpgrades.SYNONYMS]: (wordsFound: string[]) => {
+  [InputUpgrades.SYNONYMS]: (wordsFound: string[]) => {
     return wordsFound.length >= 10000;
   },
-  [OtherUpgrades.ANTONYMS]: (wordsFound: string[]) => {
+  [InputUpgrades.ANTONYMS]: (wordsFound: string[]) => {
     return wordsFound.length >= 20000;
   },
-  [OtherUpgrades.CAT]: (wordsFound: string[]) => {
+  [InputUpgrades.CAT]: (wordsFound: string[]) => {
     return wordsFound.includes("CAT");
   },
-  [OtherUpgrades.TEST]: (wordsFound: string[]) => {
+  [InputUpgrades.TEST]: (wordsFound: string[]) => {
     return wordsFound.includes("TEST");
-  },
-  [OtherUpgrades.MISSING_MEANING]: (wordsFound: string[]) => {
-    return wordsFound.length >= 5000;
-  },
-  [OtherUpgrades.FILL_IN_THE_BLANK]: (wordsFound: string[]) => {
-    return wordsFound.length >= 3000;
-  },
-  [OtherUpgrades.CATEGORIES]: (wordsFound: string[]) => {
-    return wordsFound.length > 50000;
   },
 };
 

@@ -1,6 +1,5 @@
 import { Fonts } from "../enums/fonts";
 import { InputUpgrades } from "../enums/input-upgrades";
-import { OtherUpgrades } from "../enums/other-upgrades";
 
 export type PlayerData = {
     playerId: number;
@@ -11,5 +10,4 @@ export type PlayerData = {
 export type PlayerProgress = {
     wordsFound: string[];
     inputUpgrades: InputUpgrades[];
-    otherUpgrades: OtherUpgrades[];
 }
