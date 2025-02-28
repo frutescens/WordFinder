@@ -1,6 +1,5 @@
 import { Scene } from "phaser";
 import { PlayerProgress } from "../types/player-data";
-import WordDict from "../word_list.json" assert {type: 'json'};
 import eventsCenter from "../events-center";
 
 export type MainGameData = {
@@ -12,8 +11,6 @@ export type BasicChildData = {
 }
 
 export class MainGame extends Scene {
-  public DICTIONARY_WORDS: string[];
-  public DICTIONARY_SIZE: number;
   public PLAYER_PROGRESS: PlayerProgress;
   private newWordBus: string[];
   private childSceneData: BasicChildData;
@@ -27,17 +24,17 @@ export class MainGame extends Scene {
   }
 
   init() {
-    this.DICTIONARY_WORDS = Object.keys(WordDict);
-    this.DICTIONARY_SIZE = this.DICTIONARY_WORDS.length;
     this.newWordBus = [];
     eventsCenter.on('PLAYER_DATA_CHANGED', () => {
       this.setPlayerProgress();
     });
     eventsCenter.on('NEW_INPUT_RECEIVED', (playerInput: string) => {
+      console.log(this.newWordBus);
       eventsCenter.emit('ADD_TO_BUS', playerInput);
       eventsCenter.emit('UPDATE_STREAK_TRACKER', playerInput[0]);
       eventsCenter.emit('APPLY_UPGRADES', playerInput[0]);
       eventsCenter.emit('UPDATE_PLAYER_PROGRESS');
+      eventsCenter.emit('SHOW_NEW_WORDS');
     });
     eventsCenter.on('ADD_TO_BUS', (words: string | string[]) => {
       if (!Array.isArray(words)) {
@@ -48,6 +45,15 @@ export class MainGame extends Scene {
           this.newWordBus.push(w);
         }
       });
+    });
+    eventsCenter.on('SHOW_NEW_WORDS', () => {
+      this.scene.sleep('InputManager');
+      this.scene.launch('WordsFoundDisplay', {scope: this, wordsToDisplay: this.newWordBus});
+    });
+    eventsCenter.on('WORDS_FOUND_DISPLAYED', () => {
+      this.scene.wake('InputManager');
+      this.scene.stop('WordsFoundDisplayManager');
+      this.newWordBus = [];
     });
     eventsCenter.on('UPDATE_PLAYER_PROGRESS', () => {
       this.updatePlayerProgress();
@@ -68,12 +74,10 @@ export class MainGame extends Scene {
   private setPlayerProgress(): void {
     this.PLAYER_PROGRESS = this.registry.get('playerProgress') as PlayerProgress;
     eventsCenter.emit('UPDATE_PROGRESS_DISPLAY', this.PLAYER_PROGRESS);
-    this.newWordBus = [];
   }
 
   private updatePlayerProgress(): void {
     eventsCenter.emit('ADD_NEW_WORDS', this.newWordBus);
     eventsCenter.emit('CHECK_FOR_UNLOCKS', this.PLAYER_PROGRESS);
-    //this.scene.launch('WordDisplay', this.childSceneData);
   }
 }

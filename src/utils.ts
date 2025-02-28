@@ -1,8 +1,13 @@
 import { ALL_INPUT_UPGRADES } from "./enums/input-upgrades";
 import { PlayerProgress } from "./types/player-data";
 import WordDict from "./word_list.json" assert { type: "json" };
-import { JSONEntry, WordData, Definition } from "./types/word-data";
+import { WordData, Definition } from "./types/word-data";
 
+/**
+ * Uppercases the contents of a string array
+ * @param array a list of strings
+ * @returns the string array with its contents uppercased
+ */
 export function uppercaseList(array: string[]): string[] {
   array.forEach((x) => {
     x = x.toUpperCase();
@@ -10,22 +15,31 @@ export function uppercaseList(array: string[]): string[] {
   return array;
 }
 
-export function getWordsFound(): string[] {
-  const playerProgress = JSON.parse(
-    localStorage.getItem("PlayerProgress")!
-  ) as PlayerProgress;
-  return playerProgress.wordsFound;
-}
-
+/**
+ * Helper function that generates a random value
+ * @param max the maximum value
+ * @param min the minimum value
+ * @returns a random integer between max and min
+ */
 export function randInt(max: number, min: number = 0): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * Helper function that selects and returns a random item from a provided array object
+ * @param items an array object
+ * @returns a random item from the provided array
+ */
 export function randItem<T>(items: T[]): T {
   return items.length === 1 ? items[0] : items[randInt(items.length)];
 }
 
-export function processDictionaryEntry(inputWord: string) {
+/**
+ * Helper function that processes the dictionary entry from the JSON dictionary and transforms it into a more accessible function
+ * @param inputWord 
+ * @returns a {@linkcode WordData} object
+ */
+export function processDictionaryEntry(inputWord: string): WordData {
   const dictionaryEntry = WordDict[inputWord];
   const newEntry: WordData = {
     definitions: [],

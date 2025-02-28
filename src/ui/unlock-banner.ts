@@ -55,7 +55,6 @@ export class UnlockBanner extends Phaser.GameObjects.Container {
                 return "Adds an input word's antonyms to bonus words!";
             case InputUpgrades.CAT:
                 return "Meow Meow Meow Meow Meow";
-            case InputUpgrades.TEST:
             default:
                 return "New Unlock!";
         }

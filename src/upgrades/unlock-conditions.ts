@@ -1,5 +1,4 @@
 import { InputUpgrades } from "../enums/input-upgrades";
-import { OtherUpgrades } from "../enums/other-upgrades";
 
 export type UnlockConditionFunc = (wordsFound: string[]) => boolean;
 

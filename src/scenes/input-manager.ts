@@ -1,4 +1,3 @@
-import { TextEdit } from "phaser3-rex-plugins/plugins/textedit";
 import { InputBox } from "../ui/input-box";
 import { BasicChildData, MainGame } from "./main-game";
 import WordDict from "../word_list.json" assert { type: "json" };
@@ -31,6 +30,12 @@ export class InputManager extends Phaser.Scene {
     this.events.addListener('ADD_NEW_WORD', (word: string) => {
         this.newWordsFound.push(word);
         eventsCenter.emit('NEW_INPUT_RECEIVED', this.newWordsFound);
+    });
+    this.events.addListener('sleep', () => {
+      this.inputBox.setVisible(false);
+    });
+    this.events.addListener('wake', () => {
+      this.inputBox.setVisible(true);
     });
     this.scope.add.existing(this.inputBox);
   }
