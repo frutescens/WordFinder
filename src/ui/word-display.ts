@@ -27,6 +27,8 @@ export class WordDisplay extends Phaser.GameObjects.Text {
                 eventsCenter.emit('DESTROY_WORD', this);
             }
         });
+        textColor.random();
+        this.setStroke(textColor.rgba, 5);
         this.update();
     }
 }

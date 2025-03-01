@@ -22,8 +22,5 @@ export class StreakTrackerDisplay extends Phaser.GameObjects.Container {
     public updateStreakCount(newCount: number) {
         this.streakCount = newCount;
         this.streakTrackerText.text = `Bonus Word ${this.streakCount.toString()}%! Same Letter Streak!`;
-        if (this.streakTrackerText && this.streakCount > 1) {
-            this.streakTrackerText.postFX.addShine(0.5, 0.5, 3);
-        }
     }
 }
