@@ -6,6 +6,7 @@ Use the word 'Mumble' to unlock all upgrades :3
 `npm install
 npm run start:dev`
 
+Itch Io Link: https://frutescens.itch.io/simple-word-game
 The default port of this game is 4567!
 
 # Special Thanks + Credits
