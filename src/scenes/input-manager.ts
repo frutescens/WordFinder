@@ -19,23 +19,24 @@ export class InputManager extends Phaser.Scene {
   create() {
     this.newWordsFound = [];
     this.inputBox = new InputBox(this.scope, 0, 0);
-    this.inputBox.inputText.setInteractive().on("pointerdown", () => {
-      this.scope.rexUI.edit(this.inputBox.inputText);
-    });
+    this.inputBox.inputText.setInteractive();
+    this.scope.rexUI.edit(this.inputBox.inputText);
     this.input.keyboard?.on("keyup-ENTER", () => {
       this.newWordsFound = [];
       this.processInput(encodeURIComponent(this.inputBox.inputText.text));
       this.inputBox.clearInputText();
     });
-    this.events.addListener('ADD_NEW_WORD', (word: string) => {
-        this.newWordsFound.push(word);
-        eventsCenter.emit('NEW_INPUT_RECEIVED', this.newWordsFound);
+    this.events.addListener("ADD_NEW_WORD", (word: string) => {
+      this.newWordsFound.push(word);
+      eventsCenter.emit("NEW_INPUT_RECEIVED", this.newWordsFound);
     });
-    this.events.addListener('sleep', () => {
+    this.events.addListener("sleep", () => {
       this.inputBox.setVisible(false);
     });
-    this.events.addListener('wake', () => {
+    this.events.addListener("wake", () => {
       this.inputBox.setVisible(true);
+      this.inputBox.inputText.setInteractive();
+      this.scope.rexUI.edit(this.inputBox.inputText);
     });
     this.scope.add.existing(this.inputBox);
   }
@@ -53,6 +54,6 @@ export class InputManager extends Phaser.Scene {
     ) {
       return;
     }
-    this.events.emit('ADD_NEW_WORD', playerInput);
+    this.events.emit("ADD_NEW_WORD", playerInput);
   }
 }
